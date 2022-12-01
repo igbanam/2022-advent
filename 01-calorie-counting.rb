@@ -17,4 +17,4 @@ data.each do |calorie|
   elf_calories << calorie.to_i
 end
 
-puts all_calories.map { |e| e.sum }.max
+puts all_calories.map { |e| e.sum }.max(3).sum
