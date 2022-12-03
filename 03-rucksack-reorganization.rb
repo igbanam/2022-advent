@@ -16,17 +16,9 @@ data = File.readlines(get_data_file(__FILE__), chomp: true)
 
 priorities = []
 
-data.each do |rucksack|
-  sets = []
-  raise unless rucksack.size.even?
-  midpoint = (rucksack.size / 2.0).round
-  rucksack.chars.each_slice(midpoint).each do |group|
-    g_set = Set.new
-    group.each { |c| g_set << c }
-    sets << g_set
-  end
-  mistake = (sets[0] & sets[1]).to_a.first
-  priorities << prioritize(mistake)
+data.each_slice(3) do |rucksack_group|
+  similar = rucksack_group.map(&:chars).reduce(:&)
+  priorities << prioritize(similar.first)
 end
 
 puts priorities.sum
