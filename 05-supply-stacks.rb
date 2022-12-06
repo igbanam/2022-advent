@@ -32,9 +32,7 @@ instructions = data[(split + 1)..]
 
 instructions.each do |instruction|
   instruction.scan(/move (\d+) from (\d+) to (\d+)/) do |amount, from, to|
-    amount.to_i.times do
-      crates[to.to_i - 1].push(crates[from.to_i - 1].pop).flatten!
-    end
+    crates[to.to_i - 1].push(crates[from.to_i - 1].pop(amount.to_i)).flatten!
   end
 end
 
