@@ -29,9 +29,12 @@ class Node
   end
 end
 
-class Graph
+class Filesystem
   attr_reader :root
   attr_accessor :current
+
+  TOTAL_SPACE = 70_000_000
+  UPDATE_SPACE = 30_000_000
 
   def initialize
     @root = Node.new
@@ -100,7 +103,6 @@ class Graph
   end
 
   def filter(node: @root, selected: [], &block)
-    # raise "You need to pass a block here" unless blk.nil?
     node.register_visit!
     selected << node if yield(node)
     node.children.each do |child|
@@ -131,7 +133,7 @@ end
 
 data = File.readlines(get_data_file(__FILE__), chomp: true)
 
-filesystem = Graph.new
+filesystem = Filesystem.new
 
 data.each do |line|
   segments = line.split(' ')
@@ -170,5 +172,13 @@ select_group = filesystem.filter { |n| n.size < 100000 && n.dir? }
 puts filesystem
 puts
 puts select_group.map(&:size).sum
+
+needed_space = Filesystem::UPDATE_SPACE - (Filesystem::TOTAL_SPACE - filesystem.root.size)
+biggest_removable = filesystem
+  .filter { |n| n.dir? }
+  .map { |n| [n.name, n.size, needed_space - n.size] }
+  .filter { |d| d.last.negative? }
+  .max_by { |d| d.last }[1]
+puts biggest_removable
 
 gets
